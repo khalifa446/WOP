@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Chat</title>
+<style>
+    /* الشاشة والخلفية */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* العمود على الشمال */
+    .left-column {
+        width: 200px;
+        background-color: #f9f9f9;
+        height: 100%;
+        border-right: 1px solid #ccc; /* خط خفيف مثل خانة النص */
+    }
+
+    /* الحاوية الرئيسية للي على يمين العمود */
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: #ffffff;
+    }
+
+    /* منطقة الرسائل */
+    .messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-color: #ffffff;
+    }
+
+    /* الصناديق لكل رسالة */
+    .message {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 10px;
+        background-color: #faf9f9; /* رمادي فاتح قريب من الأبيض */
+        word-wrap: break-word;
+    }
+
+    .message.user {
+        align-self: flex-end;
+    }
+
+    .message.ai {
+        align-self: flex-start;
+    }
+
+    /* منطقة إدخال النص */
+    .input-area {
+        display: flex;
+        padding: 10px 15px;
+        border-top: 1px solid #ddd;
+        background-color: #ffffff;
+    }
+
+    .input-area textarea {
+        flex: 1;
+        resize: none;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        font-size: 14px;
+        height: 40px; /* عريض ورفيع */
+        outline: none;
+    }
+
+    /* زر الإرسال على شكل طيارة ورقية مائلة، بدون دائرة */
+    .send-btn {
+        width: 40px;
+        height: 40px;
+        margin-left: 10px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: rotate(-45deg); /* ميل الطيارة */
+    }
+
+    .send-btn svg {
+        fill: #0a3f8f; /* أزرق */
+        width: 24px;
+        height: 24px;
+    }
+</style>
+</head>
+<body>
+    <div class="left-column"></div>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <textarea id="user_input" placeholder="Ask anything..."></textarea>
+            <button class="send-btn" onclick="sendMessage()">
+                <!-- أيقونة الطيارة الورقية -->
+                <svg viewBox="0 0 24 24">
+                    <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+<script>
+    async function sendMessage() {
+        const textarea = document.getElementById('user_input');
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        const messagesDiv = document.getElementById('messages');
+
+        // إضافة الرسالة المرسلة
+        const userMsg = document.createElement('div');
+        userMsg.classList.add('message', 'user');
+        userMsg.innerText = text;
+        messagesDiv.appendChild(userMsg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        textarea.value = '';
+        textarea.focus();
+
+        // إرسال الرسالة إلى السيرفر
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+
+            // عرض الرد من AI
+            const aiMsg = document.createElement('div');
+            aiMsg.classList.add('message', 'ai');
+            aiMsg.innerText = data.reply || "لا يوجد رد";
+            messagesDiv.appendChild(aiMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // إرسال عند Enter بدون Shift
+    document.getElementById('user_input').addEventListener('keydown', function(e){
+        if(e.key === 'Enter' && !e.shiftKey){
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>

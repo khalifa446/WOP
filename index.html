@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WOP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-image: url('Background.png'); 
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #000080;
+      font-size: 3.5rem;
+      text-align: center;
+      margin-bottom: 10px;
+      animation: fadeSlideIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .slogan {
+      color: #555;
+      font-size: 1.1rem;
+      text-align: center;
+      max-width: 70%;
+      line-height: 1.8;
+      margin-bottom: 40px;
+      animation: fadeSlideIn 0.7s ease-out forwards;
+      opacity: 0;
+    }
+
+    .icons-wrapper {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      justify-items: center;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: fadeSlideInIcons 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .icon-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .icon-rect {
+      width: 100%;
+      height: 150px;
+      background-color: #031157;
+      color: white;
+      border-radius: 20px;
+      font-size: clamp(15px, 1.2vw, 19px);
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), 
+                  background-color 0.4s ease, 
+                  box-shadow 0.4s ease;
+    }
+
+    /* ✨ أنيميشن الطلوع على محور الـ Y عند الهوفر */
+    .icon-rect:hover {
+      transform: translateY(-15px);
+      background-color: #1e40af;
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    /* لما الماوس يخرج — ترجع بلطف */
+  
+
+    @keyframes smoothReturn {
+      from {
+        transform: translateY(-10px);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .icon-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .icon-text i {
+      font-size: 1.6rem;
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: absolute;
+      bottom: 105%;
+      background-color: #fff;
+      color: #111;
+      padding: 10px 14px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease-in-out;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .icon-rect:hover .tooltip {
+      opacity: 1;
+      transform: translateY(-5px);
+    }
+
+    /* أنيميشن الظهور */
+    @keyframes fadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeSlideInIcons {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5rem; }
+      .slogan { font-size: 1rem; }
+      .icon-rect { height: 130px; }
+      .icons-wrapper { top: 55%; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>World of Psychology</h1>
+
+  <p class="slogan">
+    Welcome to <strong>WOP</strong> — your gateway to a world of wonder,<br>
+    where curiosity ignites passion, ideas flow freely,<br>
+    questions lead to discovery, and creativity knows no bounds.
+  </p>
+
+  <div class="icons-wrapper">
+    <div class="icon-container">
+      <a href="definition.html" class="icon-rect">
+        <div class="icon-text">
+          History <i class="fas fa-book"></i>
+        </div>
+        <span class="tooltip">What is psychology, really? Go back to where it all began</span>
+      </a>
+    </div>
+
+    <div class="icon-container">
+      <a href="Chat.html" class="icon-rect">
+        <div class="icon-text">
+          Psychiatrist <i class="fas fa-stethoscope"></i>
+        </div>
+        <span class="tooltip">Sometimes you just need to talk. That’s what we’re here for</span>
+      </a>
+    </div>
+
+    <div class="icon-container">
+      <a href="Departments.html" class="icon-rect">
+        <div class="icon-text">
+          Departments <i class="fas fa-project-diagram"></i>
+        </div>
+        <span class="tooltip">Want to grow? Start with understanding yourself</span>
+      </a>
+    </div>
+  </div>
+
+<script>
+  // تحميل الشريط الجانبي من الملف sidebar.html
+  fetch("sidebar.html")
+    .then(response => response.text())
+    .then(data => {
+      // إنشاء عنصر مؤقت لتحميل المحتوى
+      const temp = document.createElement("div");
+      temp.innerHTML = data;
+
+      // نضيف عناصر الـ sidebar للصفحة الحالية
+      document.body.append(...temp.children);
+
+      // بعد تحميله بالكامل، نعيد تشغيل أي سكريبت داخله
+      temp.querySelectorAll("script").forEach(script => {
+        const newScript = document.createElement("script");
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+    })
+    .catch(error => console.error("Error loading sidebar:", error));
+</script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sidebar Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -220px;
+      height: 100vh;
+      width: 150px;
+      background: #fff;
+      border-right: 1.5px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+      transition: left .3s ease;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+    .sidebar button, .sidebar a {
+      background: none;
+      border: none;
+      color: #031157;
+      cursor: pointer;
+      font-size: 13px;
+      margin: 16px 0;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar a i, .sidebar button i {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .coins {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #031157;
+      font-size: 13px;
+      margin: 10px 0;
+    }
+
+    .coins i {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .toggle-sidebar {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      font-size: 26px;
+      color: #031157;
+      cursor: pointer;
+      z-index: 2001;
+      background: #fff;
+      border-radius: 50%;
+      padding: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(3,17,87,0.95);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      z-index: 3000;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity .25s, transform .25s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mar{
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-brain"></i></div>
+
+  <div class="sidebar" id="sidebar">
+    <button id="helpBtn" title="Help">
+      <i class="fas fa-question-circle mar"></i>
+      <span>Help</span>
+    </button>
+
+    <div class="coins" title="Your Coins">
+      <i class="fas fa-coins"></i>
+      <span id="coinCount">0</span>
+    </div>
+
+    <a href="index.html" title="Home">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+
+    <a href="course.html" title="Courses">
+      <i class="fas fa-graduation-cap"></i>
+      <span>Courses</span>
+    </a>
+
+    <a href="Chat.html" title="WOP AI">
+      <i class="fas fa-robot"></i>
+      <span>WOP AI</span>
+    </a>
+
+    <a href="Books psych.html" title="Books">
+      <i class="fas fa-book"></i>
+      <span>Books</span>
+    </a>
+
+    <a href="Research paper psych.html" title="Research">
+      <i class="fas fa-file-alt"></i>
+      <span>Research</span>
+    </a>
+  </div>
+
+  <div id="toast" class="toast" style="display:none;"></div>
+
+  <script>
+    function getCoins() {
+      return parseInt(localStorage.getItem('userCoins')) || 120;
+    }
+
+    function updateCoinDisplay() {
+      document.getElementById('coinCount').textContent = getCoins();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.style.display = 'none', 250);
+      }, 3000);
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    document.getElementById('toggleSidebar').addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+      document.body.style.marginLeft = sidebar.classList.contains('show') ? '200px' : '0';
+    });
+
+    const helpBtn = document.getElementById('helpBtn');
+    helpBtn.addEventListener('click', () => {
+      showToast('Sidebar: coins reflect your balance. Open Courses to earn or spend.');
+    });
+
+    window.addEventListener('coinsChanged', (e) => {
+      updateCoinDisplay();
+      if (e.detail && e.detail.message) showToast(e.detail.message);
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (!e.key) return;
+      if (e.key === 'userCoins' || e.key === 'lastCoinsAction') {
+        updateCoinDisplay();
+        if (e.key === 'lastCoinsAction') {
+          try {
+            const payload = JSON.parse(e.newValue);
+            if (payload && payload.message) showToast(payload.message);
+          } catch (err) {}
+        }
+      }
+    });
+
+    updateCoinDisplay();
+  </script>
+</body>
+</html>
+
+</body>
+</html>
+
+

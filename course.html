@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Courses</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: #f9fafb;
+      margin-left: 220px;
+      padding: 20px;
+    }
+
+    .course-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .course {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .course:hover { transform: scale(1.02); }
+
+    .course h3 { margin: 0 0 10px; color: #031157; }
+
+    .course p { color: #555; }
+
+    .subscribe-btn {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #031157;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .subscribe-btn:hover:not(:disabled) { background: #1e3a8a; }
+
+    .subscribe-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .popup button {
+      margin: 8px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .coins-btn { background: #fbbf24; }
+    .usd-btn { background: #10b981; color: white; }
+    .mix-btn { background: #3b82f6; color: white; }
+
+    .close-popup {
+      background: none;
+      border: none;
+      color: #999;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Available Courses</h1>
+  <p>Your current balance: <strong id="currentCoins">0</strong> coins</p>
+  <div class="course-container" id="courses"></div>
+
+  <div class="popup" id="paymentPopup">
+    <button class="close-popup" id="closePopup">&times;</button>
+    <h3>Choose Payment Method</h3>
+    <button class="coins-btn" id="payCoins">Pay with Coins</button>
+    <button class="usd-btn" id="payUSD">Pay with Dollars</button>
+    <button class="mix-btn" id="payMix">Pay Mix</button>
+  </div>
+
+  <script>
+    const COIN_TO_USD = 50; // 50 coins = 1 USD
+    const COURSES = [
+      { id: 33, title: "Cognitive Psychology", type: "free", reward: 200 },
+      { id: 34, title: "Advanced Neuroscience", type: "paid", priceUSD: 100 },
+      { id: 29, title: "Behavioral Studies", type: "paid", priceUSD: 5 },
+      { id: 30, title: "Social Psychology", type: "free", reward: 500 },
+      { id: 31, title: "Psychotherapy Basics", type: "paid", priceUSD: 150 },
+      { id: 32, title: "Child Development", type: "free", reward: 80 },
+      { id: 35, title: "Memory & Learning", type: "paid", priceUSD: 70 },
+      { id: 18, title: "Human Behavior", type: "free", reward: 60 },
+      { id: 19, title: "Personality Theory", type: "paid", priceUSD: 90 },
+      { id: 20, title: "Positive Psychology", type: "free", reward: 75 },
+      { id: 21, title: "Clinical Methods", type: "paid", priceUSD: 12 },
+      { id: 22, title: "Research in Mind", type: "free", reward: 65 },
+      { id: 23, title: "Cognitive Therapy", type: "paid", priceUSD: 8 },
+      { id: 24, title: "Health Psychology", type: "paid", priceUSD: 11 },
+      { id: 25, title: "Organizational Psych", type: "free", reward: 900 },
+      { id: 26, title: "Experimental Design", type: "paid", priceUSD: 14 },
+    ];
+
+    const courseContainer = document.getElementById("courses");
+    const popup = document.getElementById("paymentPopup");
+    const closePopup = document.getElementById("closePopup");
+    const payCoins = document.getElementById("payCoins");
+    const payUSD = document.getElementById("payUSD");
+    const payMix = document.getElementById("payMix");
+    const currentCoinsLabel = document.getElementById("currentCoins");
+    let selectedCourse = null;
+
+    function getCoins() {
+  let coins = parseInt(localStorage.getItem("userCoins"));
+  if (coins === null || isNaN(coins)) {
+    coins = 120; // الرصيد الابتدائي للمرة الأولى
+    localStorage.setItem("userCoins", coins);
+  }
+  return coins;
+}
+
+
+    function setCoins(amount) {
+      localStorage.setItem("userCoins", amount);
+      window.dispatchEvent(new Event("storage"));
+      updateBalanceDisplay();
+    }
+
+    function updateBalanceDisplay() {
+      currentCoinsLabel.textContent = getCoins();
+    }
+
+    function getSubscribedCourses() {
+      return JSON.parse(localStorage.getItem("subscribedCourses")) || [];
+    }
+
+    function addSubscribedCourse(id) {
+      const subs = getSubscribedCourses();
+      subs.push(id);
+      localStorage.setItem("subscribedCourses", JSON.stringify(subs));
+    }
+
+    function isSubscribed(id) {
+      return getSubscribedCourses().includes(id);
+    }
+
+    function showMessage(msg) {
+      alert(msg);
+    }
+
+    function renderCourses() {
+      courseContainer.innerHTML = "";
+      COURSES.forEach(course => {
+        const div = document.createElement("div");
+        div.className = "course";
+        const subscribed = isSubscribed(course.id);
+        div.innerHTML = `
+          <h3>${course.title}</h3>
+          ${
+            course.type === "free"
+              ? `<p>Free Course - Earn ${course.reward} Coins</p>`
+              : `<p>Paid Course - $${course.priceUSD}</p>`
+          }
+          <button class="subscribe-btn" data-id="${course.id}" ${subscribed ? "disabled" : ""}>
+            ${subscribed ? "Subscribed" : "Subscribe"}
+          </button>
+        `;
+        courseContainer.appendChild(div);
+      });
+
+      document.querySelectorAll(".subscribe-btn").forEach(btn => {
+        btn.addEventListener("click", handleSubscribe);
+      });
+    }
+
+    renderCourses();
+    updateBalanceDisplay();
+
+    function handleSubscribe(e) {
+      const courseId = parseInt(e.target.dataset.id);
+      selectedCourse = COURSES.find(c => c.id === courseId);
+
+      if (isSubscribed(selectedCourse.id)) {
+        showMessage("You are already subscribed to this course!");
+        return;
+      }
+
+      if (selectedCourse.type === "free") {
+        const newCoins = getCoins() + selectedCourse.reward;
+        setCoins(newCoins);
+        addSubscribedCourse(selectedCourse.id);
+        showMessage(`You earned ${selectedCourse.reward} coins!\nBalance: ${newCoins} coins`);
+        renderCourses();
+      } else {
+        popup.style.display = "block";
+      }
+    }
+
+    closePopup.addEventListener("click", () => { popup.style.display = "none"; });
+
+    payCoins.addEventListener("click", () => {
+      const coinsNeeded = selectedCourse.priceUSD * COIN_TO_USD;
+      if (getCoins() < coinsNeeded) {
+        showMessage("Not enough coins!");
+      } else {
+        const newCoins = getCoins() - coinsNeeded;
+        setCoins(newCoins);
+        addSubscribedCourse(selectedCourse.id);
+        showMessage(`Paid ${coinsNeeded} coins.\nBalance: ${newCoins} coins`);
+        renderCourses();
+      }
+      popup.style.display = "none";
+    });
+
+    payUSD.addEventListener("click", () => {
+      addSubscribedCourse(selectedCourse.id);
+      showMessage(`You paid $${selectedCourse.priceUSD} successfully (no coins used).`);
+      renderCourses();
+      popup.style.display = "none";
+    });
+
+    payMix.addEventListener("click", () => {
+  const courseCard = [...document.querySelectorAll(".course")].find(div =>
+    div.querySelector(`[data-id='${selectedCourse.id}']`)
+  );
+
+  const priceUSD = selectedCourse.priceUSD;
+  let remainingUSD = parseFloat(courseCard.getAttribute("data-remaining-usd")) || priceUSD;
+  const coinsBalance = getCoins();
+  const coinsValueInUSD = coinsBalance / COIN_TO_USD;
+
+  // نحدد نص السعر بالكوينز أو كل الرصيد المتاح
+  const coinPartUSD = Math.min(remainingUSD / 2, coinsValueInUSD);
+  const coinsUsed = coinPartUSD * COIN_TO_USD;
+  remainingUSD -= coinPartUSD;
+  const newCoins = coinsBalance - coinsUsed;
+  setCoins(newCoins);
+
+  // تحديث السعر المتبقي في الكارت
+  courseCard.setAttribute("data-remaining-usd", remainingUSD);
+
+  const priceTag = courseCard.querySelector("p");
+  const oldPrice = `$${priceUSD}`;
+  const newPrice = remainingUSD <= 0
+    ? `<span style="color:#10b981;font-weight:bold;">Paid in full!</span>`
+    : `<span style="color:#10b981;font-weight:bold;">$${remainingUSD.toFixed(2)}</span>`;
+
+  priceTag.innerHTML = `
+    <span style="text-decoration: line-through; color:#888;">${oldPrice}</span>
+    <br/>${newPrice}
+  `;
+
+  // لو متبقي مبلغ للدفع ما نغيرش الزرار
+  if (remainingUSD <= 0) {
+    addSubscribedCourse(selectedCourse.id);
+    const btn = courseCard.querySelector(".subscribe-btn");
+    btn.textContent = "Subscribed";
+    btn.disabled = true;
+    showMessage(`Course fully paid! Balance: ${newCoins} coins`);
+  } else {
+    showMessage(`You used ${coinsUsed} coins. Remaining: $${remainingUSD.toFixed(2)}.\nBalance: ${newCoins} coins`);
+  }
+
+  popup.style.display = "none";
+});
+
+
+    console.log(currentCoins)
+  </script>
+</body>
+</html>
